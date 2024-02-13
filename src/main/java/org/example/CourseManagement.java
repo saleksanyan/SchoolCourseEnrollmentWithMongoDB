@@ -10,8 +10,13 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
+/**
+ * this class manages courses by providing some functionalities
+ */
+
 public class CourseManagement {
 
+    //creates course
     public static void createCourse(MongoCollection<Document> courseCollection, String courseName, String id, String department) {
         Document studentDocument = new Document("courseId", id)
                 .append("courseName", courseName)
@@ -19,7 +24,7 @@ public class CourseManagement {
         courseCollection.insertOne(studentDocument);
     }
 
-    // Check if the given courseId exists in the collection
+    // check if the given courseId exists in the collection
     public static boolean courseIdExists(MongoCollection<Document> courseCollection, String courseId) {
         AtomicInteger count = new AtomicInteger();
         courseCollection.find().forEach((Consumer<? super Document>) document -> {
@@ -34,6 +39,7 @@ public class CourseManagement {
         return true;
     }
 
+    //lists all courses
     public static void listAllCourses(MongoCollection<Document> courseCollection) {
         // Find all documents in the courseCollection
         courseCollection.find().forEach((Consumer<? super Document>) document -> {
@@ -43,8 +49,8 @@ public class CourseManagement {
         });
     }
 
+    //calculates average age of students in each course
     public static void calculateAverageAgeInEachCourse(MongoCollection<Document> studentsCollection) {
-        // Aggregation example: Calculate the average age of students in each course
         AggregateIterable<Document> result = studentsCollection.aggregate(Arrays.asList(
                 new Document("$unwind", "$enrolledCourses"),
                 new Document("$group", new Document("_id", "$enrolledCourses")
@@ -56,6 +62,7 @@ public class CourseManagement {
         }
     }
 
+    //lists all enrolled courses
     public static void displayEnrolledCourses(MongoDatabase database, String studentId) {
         // Data Modeling example: Display all courses a student is enrolled in using referencing
         MongoCollection<Document> studentsCollection = database.getCollection("Students");
@@ -65,6 +72,7 @@ public class CourseManagement {
         }
     }
 
+    //finds the number of students that attend each course
     public static void findNumberOfStudentsInEachCourse(MongoCollection<Document> studentsCollection) {
         // Aggregation example: Find the number of students enrolled in each course
         AggregateIterable<Document> result = studentsCollection.aggregate(Arrays.asList(
